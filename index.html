@@ -4,410 +4,872 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OTC Тоҷикистон — Trading</title>
+<title>OTC Тоҷикистон — Савдои виртуалӣ</title>
 <style>
 :root{
- --bg:#090e18;--panel:#151e2e;--panel2:#1b283a;
- --line:#2c3b50;--text:#f5f7fb;--muted:#9daec3;
- --green:#19c783;--red:#ef5362;--yellow:#f4c94d;
+  --bg:#080e19;
+  --panel:#121e30;
+  --line:#293b53;
+  --text:#f2f6ff;
+  --muted:#9badc6;
+  --green:#18c88c;
+  --red:#f15a6b;
+  --blue:#377bf5;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;background:#131d2c;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.brand{font-weight:800;font-size:22px;color:#fff}
-nav{display:flex;gap:12px;flex-wrap:wrap}
-a{color:#bed4f7;text-decoration:none}
-nav a:hover{text-decoration:underline}
-main{max-width:1450px;margin:auto;padding:14px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:13px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.muted{color:var(--muted);font-size:13px}
-.price{font-size:26px;font-weight:bold}
-.greenText{color:var(--green)}.redText{color:var(--red)}
-canvas{width:100%;display:block;background:#0c1523;border-radius:8px}
-#chart{height:350px}#rsi,#macd{height:90px}
-label{display:block;margin:12px 0 6px;color:#b9c9dc;font-size:13px}
-input,select,button{width:100%;border-radius:8px;padding:12px;font-size:15px}
-input,select{background:#0d1726;color:#fff;border:1px solid #445671}
-button{border:0;color:#fff;cursor:pointer;font-weight:bold}
-button:disabled{opacity:.55;cursor:not-allowed}
-.up{background:#13985e;margin-top:12px}
-.down{background:#c83e50;margin-top:9px}
-.secondary{background:#30435e}
-.balance{font-size:27px;font-weight:bold;margin:10px 0}
-.payout{color:var(--yellow);font-weight:bold}
-.notice{padding:12px;border-radius:9px;background:#493b1f;color:#ffdfa0;margin-bottom:13px}
-.item{border-bottom:1px solid var(--line);padding:10px 0;font-size:13px}
-.pill{padding:6px 10px;border-radius:15px;background:#25364d;font-size:12px}
-#timer{font-size:28px;font-weight:bold;text-align:center;margin:10px 0}
-@media(max-width:850px){.layout{grid-template-columns:1fr}}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:15px 20px;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
+header strong{font-size:21px}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+a{color:#a8c7ff;text-decoration:none}
+main{max-width:1500px;margin:auto;padding:14px}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+}
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+}
+button,select,input{
+  border:1px solid #3b5270;
+  border-radius:8px;
+  background:#1a2c44;
+  color:white;
+  padding:10px 13px;
+  font-size:14px;
+}
+button{cursor:pointer}
+button.active{
+  background:var(--blue);
+  border-color:var(--blue);
+}
+button:hover{filter:brightness(1.12)}
+.price{
+  font-size:25px;
+  font-weight:800;
+  color:var(--green);
+  margin-left:auto;
+}
+.muted{color:var(--muted);font-size:12px}
+.warning{
+  background:#30291b;
+  color:#ffdc8b;
+  border:1px solid #6b5226;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:12px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 310px;
+  gap:12px;
+}
+canvas{
+  display:block;
+  width:100%;
+}
+#chart{height:420px}
+#rsi,#macd{height:105px}
+.indicator{
+  font-size:13px;
+  color:#bcd1e8;
+  margin-bottom:6px;
+}
+.legend{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.balance{
+  font-size:29px;
+  font-weight:800;
+  margin:12px 0;
+}
+.field{margin:16px 0}
+.field label{
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  color:var(--muted);
+}
+.field input,.field select{width:100%}
+.trade-btn{
+  width:100%;
+  border:0;
+  font-size:18px;
+  font-weight:bold;
+  padding:17px;
+  margin-top:10px;
+}
+.up{background:var(--green);color:#062318}
+.down{background:var(--red);color:white}
+.stat{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin:12px 0;
+}
+.trade{
+  padding:10px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+#countdown{color:#f8ce63;font-weight:bold}
+@media(max-width:850px){
+  .layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  #chart{height:340px}
+  .price{width:100%;margin-left:0}
+  main{padding:8px}
+}
 </style>
 </head>
 <body>
+
 <header>
- <div class="brand">📈 OTC Тоҷикистон</div>
- <nav>
-  <a href="index.html">Савдо</a>
-  <a href="wallet.html">Ҳамён</a>
-  <a href="otc-test.html">REAL TEST</a>
-  <a href="admin.html">Админ</a>
- </nav>
+  <strong>📈 OTC Тоҷикистон</strong>
+  <nav>
+    <a href="index.html">Савдо</a>
+    <a href="wallet.html">Ҳамён</a>
+    <a href="otc-test.html">REAL TEST</a>
+    <a href="admin.html">Админ</a>
+  </nav>
 </header>
 
 <main>
-<div class="notice">
- ⚠️ Платформаи озмоишӣ: маблағҳо виртуалӣ мебошанд.
- Ин саҳифа ба биржаи воқеӣ ё пардохти бонкӣ пайваст нест.
+
+<div class="warning">
+  ⚠️ Платформаи озмоишӣ. Ҳамаи маблағҳо виртуалӣ мебошанд.
+  Нархҳо симулятсионӣ ҳастанд ва ба биржаи воқеӣ пайваст нестанд.
+</div>
+
+<div class="panel">
+  <div class="toolbar">
+    <select id="pair">
+      <option>AUD/CHF OTC</option>
+      <option>EUR/USD OTC</option>
+      <option>GBP/USD OTC</option>
+      <option>USD/JPY OTC</option>
+      <option>EUR/JPY OTC</option>
+      <option>AUD/USD OTC</option>
+    </select>
+    <span class="muted">Нархи симулятсионӣ</span>
+    <span class="price" id="price">0.62850</span>
+  </div>
 </div>
 
 <div class="layout">
+
 <section>
- <div class="card">
-  <div class="top">
-   <div>
-    <label>Ҷуфти OTC</label>
-    <select id="pair">
-     <option>AUD/CHF OTC</option>
-     <option>EUR/USD OTC</option>
-     <option>GBP/USD OTC</option>
-     <option>USD/JPY OTC</option>
-     <option>EUR/JPY OTC</option>
-     <option>AUD/USD OTC</option>
-    </select>
-   </div>
-   <div>
-    <div class="muted">Нархи симулятсионӣ</div>
-    <div class="price" id="price">0.62850</div>
-   </div>
-   <span class="pill">M1 · 24/7</span>
+
+<div class="panel">
+  <div class="toolbar" id="timeframes">
+    <button data-tf="5">5s</button>
+    <button data-tf="20">20s</button>
+    <button data-tf="30">30s</button>
+    <button data-tf="60" class="active">1m</button>
+    <button data-tf="180">3m</button>
+    <button data-tf="300">5m</button>
+    <span class="muted">Свечаи нав:</span>
+    <span id="countdown">00:00</span>
+  </div>
+  <div class="toolbar" style="margin-top:10px">
+    <button id="zoomIn">+ Калон</button>
+    <button id="zoomOut">− Хурд</button>
+    <button id="reset">Барқарор</button>
+    <label><input type="checkbox" id="ma" checked> MA10</label>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="legend">
+    <span>🟢 Болоравӣ</span>
+    <span>🔴 Поёнравӣ</span>
+    <span>🟡 MA10</span>
+    <span>Шкалаи нархҳо дар тарафи рост</span>
   </div>
   <canvas id="chart"></canvas>
-  <p class="muted">Хати зард — Moving Average 10</p>
+</div>
+
+<div class="panel">
+  <div class="indicator">RSI (14)</div>
   <canvas id="rsi"></canvas>
-  <p class="muted">RSI 14</p>
+</div>
+
+<div class="panel">
+  <div class="indicator">MACD (12, 26, 9)</div>
   <canvas id="macd"></canvas>
-  <p class="muted">MACD 12/26/9</p>
- </div>
+</div>
+
 </section>
 
 <aside>
- <div class="card">
-  <div class="muted">Ҳисоби савдо</div>
-  <select id="mode">
-   <option value="demo">DEMO</option>
-   <option value="test">REAL TEST (виртуалӣ)</option>
-  </select>
-  <div class="balance" id="balance">200.00 TJS</div>
-  <a href="wallet.html">Идоракунии ҳамён</a>
- </div>
+<div class="panel">
 
- <div class="card">
-  <h3>Савдои нав</h3>
+<h3>Ҳисоби савдо</h3>
+
+<div class="toolbar">
+  <button id="demoMode" class="active">DEMO</button>
+  <button id="realMode">REAL TEST</button>
+</div>
+
+<div class="balance" id="balance">200.00 TJS</div>
+
+<a href="wallet.html">Идоракунии ҳамён</a>
+
+<h3>Савдои нав</h3>
+
+<div class="field">
   <label>Маблағ (1–100 сомонӣ)</label>
-  <input id="stake" type="number" min="1" max="100" value="10" step="1">
+  <input id="amount" type="number" min="1" max="100" value="10">
+</div>
+
+<div class="field">
   <label>Вақти савдо</label>
   <select id="duration">
-   <option value="60">1 дақиқа</option>
-   <option value="120">2 дақиқа</option>
-   <option value="180">3 дақиқа</option>
-   <option value="240">4 дақиқа</option>
+    <option value="60">1 дақиқа</option>
+    <option value="120">2 дақиқа</option>
+    <option value="180">3 дақиқа</option>
+    <option value="240">4 дақиқа</option>
   </select>
-  <p class="muted">Фоидаи шартӣ ҳангоми бурд</p>
-  <div class="payout" id="profit">+9.20 TJS (92%)</div>
-  <div id="timer">01:00</div>
-  <button class="up" id="up">↑ БОЛО</button>
-  <button class="down" id="down">↓ ПОЁН</button>
-  <p id="status" class="muted">Омода барои савдо</p>
- </div>
+</div>
 
- <div class="card">
+<div class="stat">
+  <span>Фоида ҳангоми бурд</span>
+  <strong id="profit">+9.20 TJS (92%)</strong>
+</div>
+
+<div class="stat">
+  <span>Савдоҳои фаъол</span>
+  <strong id="activeCount">0</strong>
+</div>
+
+<button class="trade-btn up" id="upBtn">↑ БОЛО</button>
+<button class="trade-btn down" id="downBtn">↓ ПОЁН</button>
+
+<p class="muted" id="message">
+  Савдои виртуалиро оғоз кунед.
+</p>
+
+</div>
+
+<div class="panel">
   <h3>Таърихи савдо</h3>
-  <div id="history">Ҳоло савдо нест.</div>
- </div>
+  <div id="history"></div>
+</div>
 </aside>
+
 </div>
 </main>
 
 <script>
 "use strict";
+
 const $=id=>document.getElementById(id);
-const WALLET_KEY="otc_virtual_wallet_v1";
-const DEMO_KEY="otc_demo_balance_v1";
-const HISTORY_KEY="otc_index_history_v1";
-const PAIRS={
- "AUD/CHF OTC":.62850,
+
+const BASE={
+ "AUD/CHF OTC":0.62850,
  "EUR/USD OTC":1.08450,
  "GBP/USD OTC":1.27350,
  "USD/JPY OTC":149.250,
  "EUR/JPY OTC":161.720,
- "AUD/USD OTC":.65420
+ "AUD/USD OTC":0.65420
 };
-let candles=[],price=PAIRS[$("pair").value],tick=0,trade=null;
-let demoBalance=Number(localStorage.getItem(DEMO_KEY));
-if(!Number.isFinite(demoBalance))demoBalance=200;
-let history=[];
-try{history=JSON.parse(localStorage.getItem(HISTORY_KEY))||[]}
-catch(e){history=[]}
-if(!Array.isArray(history))history=[];
 
-function money(n){return Number(n).toFixed(2)+" TJS"}
-function wallet(){
+const WALLET_KEY="otc_virtual_wallet_v1";
+const DEMO_KEY="otc_demo_balance_v1";
+const HISTORY_KEY="otc_index_history_v1";
+
+let timeframe=60;
+let visible=55;
+let pair=$("pair").value;
+let price=BASE[pair];
+let ticks=[];
+let candles=[];
+let mode="demo";
+let activeTrades=[];
+let history=[];
+
+function readJSON(key,fallback){
  try{
-  const w=JSON.parse(localStorage.getItem(WALLET_KEY));
-  if(w&&Number.isFinite(w.balance)&&Array.isArray(w.requests))
-   return w;
- }catch(e){}
+  const value=JSON.parse(localStorage.getItem(key));
+  return value===null?fallback:value;
+ }catch{
+  return fallback;
+ }
+}
+
+function getDemoBalance(){
+ const n=Number(localStorage.getItem(DEMO_KEY));
+ return localStorage.getItem(DEMO_KEY)===null
+  ?200:(Number.isFinite(n)?n:200);
+}
+
+function setDemoBalance(n){
+ localStorage.setItem(DEMO_KEY,String(n));
+}
+
+function getWallet(){
+ const w=readJSON(WALLET_KEY,null);
+ if(w&&Number.isFinite(Number(w.balance))){
+  return w;
+ }
  return {balance:200,requests:[]};
 }
+
 function saveWallet(w){
  localStorage.setItem(WALLET_KEY,JSON.stringify(w));
 }
-function balance(){
- return $("mode").value==="demo"?demoBalance:wallet().balance;
+
+function getBalance(){
+ return mode==="demo"
+  ?getDemoBalance():Number(getWallet().balance);
 }
-function setBalance(n){
- n=Math.round(n*100)/100;
- if($("mode").value==="demo"){
-  demoBalance=n;
-  localStorage.setItem(DEMO_KEY,String(n));
+
+function changeBalance(delta){
+ if(mode==="demo"){
+  setDemoBalance(Math.max(0,getDemoBalance()+delta));
  }else{
-  const w=wallet();
-  w.balance=n;
+  const w=getWallet();
+  w.balance=Math.max(0,Number(w.balance)+delta);
   saveWallet(w);
  }
- renderBalance();
 }
-function renderBalance(){
- $("balance").textContent=money(balance());
+
+function money(n){
+ return Number(n).toFixed(2)+" TJS";
 }
-function move(){return(Math.random()-.5)*.00028}
-function initialise(){
- candles=[];
- for(let i=0;i<70;i++){
-  const open=price,close=open+move();
-  candles.push({
-   open,close,
-   high:Math.max(open,close)+Math.abs(move())*.4,
-   low:Math.min(open,close)-Math.abs(move())*.4
-  });
-  price=close;
+
+function refreshBalance(){
+ $("balance").textContent=money(getBalance());
+ $("demoMode").classList.toggle("active",mode==="demo");
+ $("realMode").classList.toggle("active",mode==="real");
+}
+
+function decimals(){
+ return pair.includes("JPY")?3:5;
+}
+
+function format(n){
+ return Number(n).toFixed(decimals());
+}
+
+function randomMove(p){
+ return (Math.random()-.5)*p*0.0004;
+}
+
+function makeHistory(){
+ const now=Date.now();
+ let p=BASE[pair];
+ ticks=[];
+ for(let i=18000-1;i>=0;i--){
+  p=Math.max(.00001,p+randomMove(p));
+  ticks.push({t:now-i*1000,p});
  }
- tick=0;
- draw();
+ price=p;
+ rebuild();
 }
-function canvas(id){
- const el=$(id),rect=el.getBoundingClientRect();
- const d=window.devicePixelRatio||1;
- el.width=Math.max(1,Math.round(rect.width*d));
- el.height=Math.max(1,Math.round(rect.height*d));
+
+function rebuild(){
+ const buckets=new Map();
+ const ms=timeframe*1000;
+
+ for(const tick of ticks){
+  const key=Math.floor(tick.t/ms);
+  let c=buckets.get(key);
+  if(!c){
+   c={
+    t:key*ms,
+    open:tick.p,
+    high:tick.p,
+    low:tick.p,
+    close:tick.p
+   };
+   buckets.set(key,c);
+  }else{
+   c.high=Math.max(c.high,tick.p);
+   c.low=Math.min(c.low,tick.p);
+   c.close=tick.p;
+  }
+ }
+ candles=[...buckets.values()].slice(-300);
+ drawAll();
+}
+
+function setupCanvas(id){
+ const el=$(id);
+ const box=el.getBoundingClientRect();
+ const ratio=window.devicePixelRatio||1;
+ const w=Math.max(1,box.width);
+ const h=Math.max(1,box.height);
+
+ el.width=Math.round(w*ratio);
+ el.height=Math.round(h*ratio);
+
  const ctx=el.getContext("2d");
- ctx.setTransform(d,0,0,d,0,0);
- return {ctx,w:rect.width,h:rect.height};
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+ return {ctx,w,h};
 }
+
+function sma(values,n){
+ return values.map((v,i)=>{
+  if(i<n-1)return null;
+  let sum=0;
+  for(let j=i-n+1;j<=i;j++)sum+=values[j];
+  return sum/n;
+ });
+}
+
 function ema(values,n){
+ if(!values.length)return [];
  let e=values[0],k=2/(n+1);
- return values.map(v=>(e=v*k+e*(1-k)));
+ return values.map(v=>e=v*k+e*(1-k));
 }
-function rsi(values,n=14){
- const out=Array(values.length).fill(null);
- if(values.length<=n)return out;
- let gain=0,loss=0;
- for(let i=1;i<=n;i++){
-  let diff=values[i]-values[i-1];
-  gain+=Math.max(diff,0);
-  loss+=Math.max(-diff,0);
- }
- gain/=n;loss/=n;
- const calc=()=>loss===0?(gain===0?50:100):
-  100-100/(1+gain/loss);
- out[n]=calc();
- for(let i=n+1;i<values.length;i++){
-  let diff=values[i]-values[i-1];
-  gain=(gain*(n-1)+Math.max(diff,0))/n;
-  loss=(loss*(n-1)+Math.max(-diff,0))/n;
-  out[i]=calc();
- }
- return out;
-}
-function draw(){
- const data=candles.slice(-60);
- if(!data.length)return;
- const values=data.map(x=>x.close);
- const {ctx,w,h}=canvas("chart");
- const high=Math.max(...data.map(x=>x.high));
- const low=Math.min(...data.map(x=>x.low));
- const range=Math.max(high-low,.000001);
- const y=p=>12+(high-p)/range*(h-25);
- const step=w/data.length;
- ctx.strokeStyle="#29394f";
- for(let i=1;i<6;i++){
-  ctx.beginPath();ctx.moveTo(0,h*i/6);
-  ctx.lineTo(w,h*i/6);ctx.stroke();
- }
- data.forEach((c,i)=>{
-  const x=(i+.5)*step;
-  ctx.fillStyle=ctx.strokeStyle=
-   c.close>=c.open?"#19c783":"#ef5362";
-  ctx.beginPath();
-  ctx.moveTo(x,y(c.high));ctx.lineTo(x,y(c.low));
-  ctx.stroke();
-  ctx.fillRect(x-step*.29,
-   Math.min(y(c.open),y(c.close)),
-   Math.max(2,step*.58),
-   Math.max(1,Math.abs(y(c.open)-y(c.close))));
- });
- ctx.strokeStyle="#f4c94d";ctx.lineWidth=2;
+
+function drawLine(ctx,values,x,y,color,width=1.7){
+ ctx.strokeStyle=color;
+ ctx.lineWidth=width;
  ctx.beginPath();
- for(let i=9;i<values.length;i++){
-  const avg=values.slice(i-9,i+1)
-   .reduce((a,b)=>a+b,0)/10;
-  if(i===9)ctx.moveTo((i+.5)*step,y(avg));
-  else ctx.lineTo((i+.5)*step,y(avg));
- }
+ let started=false;
+ values.forEach((v,i)=>{
+  if(v===null||!Number.isFinite(v)){
+   started=false;
+   return;
+  }
+  if(!started){
+   ctx.moveTo(x(i),y(v));
+   started=true;
+  }else{
+   ctx.lineTo(x(i),y(v));
+  }
+ });
  ctx.stroke();
+}
 
- const rr=canvas("rsi"),rv=rsi(values);
- rr.ctx.strokeStyle="#52657d";
- [30,70].forEach(v=>{
-  const yy=rr.h*(100-v)/100;
-  rr.ctx.beginPath();rr.ctx.moveTo(0,yy);
-  rr.ctx.lineTo(rr.w,yy);rr.ctx.stroke();
- });
- rr.ctx.strokeStyle="#f4c94d";
- rr.ctx.lineWidth=2;rr.ctx.beginPath();
- rv.forEach((v,i)=>{
-  if(v===null)return;
-  const x=i*rr.w/rv.length;
-  const yy=rr.h*(100-v)/100;
-  if(i===14)rr.ctx.moveTo(x,yy);
-  else rr.ctx.lineTo(x,yy);
- });
- rr.ctx.stroke();
+function drawChart(){
+ const {ctx,w,h}=setupCanvas("chart");
+ const data=candles.slice(-visible);
+ if(!data.length)return;
 
- const f=ema(values,12),s=ema(values,26);
- const macd=f.map((v,i)=>v-s[i]);
- const signal=ema(macd,9);
- const histogram=macd.map((v,i)=>v-signal[i]);
- const mm=canvas("macd");
- const max=Math.max(...histogram.map(Math.abs),.000001);
- histogram.forEach((v,i)=>{
-  const bh=Math.abs(v)/max*mm.h*.44;
-  mm.ctx.fillStyle=v>=0?"#19c783":"#ef5362";
-  mm.ctx.fillRect(
-   i*mm.w/histogram.length,
-   v>=0?mm.h/2-bh:mm.h/2,
-   Math.max(2,mm.w/histogram.length-2),bh
+ const right=85,top=20,bottom=30;
+ const plotW=Math.max(10,w-right);
+ const plotH=h-top-bottom;
+
+ let hi=Math.max(...data.map(c=>c.high));
+ let lo=Math.min(...data.map(c=>c.low));
+ const padding=Math.max((hi-lo)*.12,price*.00005);
+ hi+=padding;
+ lo-=padding;
+
+ const range=Math.max(hi-lo,.00000001);
+ const y=v=>top+(hi-v)/range*plotH;
+ const step=plotW/data.length;
+ const x=i=>(i+.5)*step;
+
+ ctx.font="12px Arial";
+ ctx.textAlign="right";
+
+ for(let i=0;i<=6;i++){
+  const v=hi-(hi-lo)*i/6;
+  const yy=y(v);
+  ctx.strokeStyle="#26354b";
+  ctx.beginPath();
+  ctx.moveTo(0,yy);
+  ctx.lineTo(plotW,yy);
+  ctx.stroke();
+  ctx.fillStyle="#b7c8dd";
+  ctx.fillText(format(v),w-5,yy+4);
+ }
+
+ data.forEach((c,i)=>{
+  const xx=x(i);
+  const color=c.close>=c.open?"#18c88c":"#f15a6b";
+  ctx.strokeStyle=color;
+  ctx.fillStyle=color;
+  ctx.lineWidth=1.4;
+  ctx.beginPath();
+  ctx.moveTo(xx,y(c.high));
+  ctx.lineTo(xx,y(c.low));
+  ctx.stroke();
+
+  const a=y(c.open),b=y(c.close);
+  ctx.fillRect(
+   xx-step*.32,
+   Math.min(a,b),
+   Math.max(2,step*.64),
+   Math.max(1,Math.abs(a-b))
   );
  });
- $("price").textContent=price.toFixed(
-  $("pair").value.includes("JPY")?3:5
+
+ if($("ma").checked){
+  drawLine(ctx,sma(data.map(c=>c.close),10),
+   x,y,"#f4c94d",2);
+ }
+
+ const currentY=y(price);
+ ctx.setLineDash([5,4]);
+ ctx.strokeStyle="#66baff";
+ ctx.beginPath();
+ ctx.moveTo(0,currentY);
+ ctx.lineTo(plotW,currentY);
+ ctx.stroke();
+ ctx.setLineDash([]);
+
+ ctx.fillStyle="#2260a5";
+ ctx.fillRect(plotW,currentY-11,right,22);
+ ctx.fillStyle="#fff";
+ ctx.textAlign="right";
+ ctx.fillText(format(price),w-5,currentY+4);
+
+ ctx.textAlign="center";
+ ctx.fillStyle="#9badc6";
+ for(let i=0;i<data.length;i+=Math.max(1,Math.ceil(data.length/6))){
+  const d=new Date(data[i].t);
+  ctx.fillText(
+   d.toLocaleTimeString("en-GB",{hour12:false}),
+   x(i),h-8
+  );
+ }
+}
+
+function calculateRSI(values,n=14){
+ const result=Array(values.length).fill(null);
+ if(values.length<=n)return result;
+
+ let gains=0,losses=0;
+ for(let i=1;i<=n;i++){
+  const d=values[i]-values[i-1];
+  gains+=Math.max(0,d);
+  losses+=Math.max(0,-d);
+ }
+ gains/=n;
+ losses/=n;
+
+ const calc=()=>losses===0
+  ?(gains===0?50:100)
+  :100-100/(1+gains/losses);
+
+ result[n]=calc();
+
+ for(let i=n+1;i<values.length;i++){
+  const d=values[i]-values[i-1];
+  gains=(gains*(n-1)+Math.max(0,d))/n;
+  losses=(losses*(n-1)+Math.max(0,-d))/n;
+  result[i]=calc();
+ }
+ return result;
+}
+
+function drawRSI(){
+ const {ctx,w,h}=setupCanvas("rsi");
+ const values=candles.map(c=>c.close);
+ const rv=calculateRSI(values).slice(-visible);
+ const plotW=w-85;
+ const x=i=>(i+.5)*plotW/Math.max(1,rv.length);
+ const y=v=>6+(100-v)/100*(h-12);
+
+ ctx.font="11px Arial";
+ [30,50,70].forEach(level=>{
+  ctx.strokeStyle="#2d3d55";
+  ctx.beginPath();
+  ctx.moveTo(0,y(level));
+  ctx.lineTo(plotW,y(level));
+  ctx.stroke();
+  ctx.fillStyle="#aabbd0";
+  ctx.fillText(String(level),plotW+8,y(level)+4);
+ });
+
+ drawLine(ctx,rv,x,y,"#e5c45a",2);
+}
+
+function drawMACD(){
+ const {ctx,w,h}=setupCanvas("macd");
+ const values=candles.map(c=>c.close);
+ if(!values.length)return;
+
+ const fast=ema(values,12);
+ const slow=ema(values,26);
+ const macd=fast.map((v,i)=>v-slow[i]);
+ const signal=ema(macd,9);
+ const hist=macd.map((v,i)=>v-signal[i]);
+
+ const a=macd.slice(-visible);
+ const b=signal.slice(-visible);
+ const bars=hist.slice(-visible);
+ const plotW=w-85;
+ const max=Math.max(
+  ...[...a,...b,...bars].map(Math.abs),
+  .000001
+ );
+
+ const x=i=>(i+.5)*plotW/Math.max(1,a.length);
+ const y=v=>h/2-v/max*(h*.42);
+
+ ctx.strokeStyle="#3d506b";
+ ctx.beginPath();
+ ctx.moveTo(0,h/2);
+ ctx.lineTo(plotW,h/2);
+ ctx.stroke();
+
+ bars.forEach((v,i)=>{
+  const yy=y(v);
+  ctx.fillStyle=v>=0?"#18c88c":"#f15a6b";
+  ctx.fillRect(
+   x(i)-2,
+   Math.min(yy,h/2),
+   4,
+   Math.max(1,Math.abs(yy-h/2))
+  );
+ });
+
+ drawLine(ctx,a,x,y,"#6bb9ff");
+ drawLine(ctx,b,x,y,"#f4c94d");
+}
+
+function drawAll(){
+ $("price").textContent=format(price);
+ drawChart();
+ drawRSI();
+ drawMACD();
+}
+
+function updateCountdown(){
+ const remaining=timeframe-
+  (Math.floor(Date.now()/1000)%timeframe);
+ $("countdown").textContent=
+  String(Math.floor(remaining/60)).padStart(2,"0")+
+  ":"+String(remaining%60).padStart(2,"0");
+}
+
+function updatePrice(){
+ price=Math.max(.00001,price+randomMove(price));
+ ticks.push({t:Date.now(),p:price});
+ if(ticks.length>22000)ticks.shift();
+ rebuild();
+ settleTrades();
+ updateCountdown();
+}
+
+function updateProfit(){
+ const amount=Number($("amount").value);
+ $("profit").textContent=
+  Number.isFinite(amount)
+  ?"+"+(amount*.92).toFixed(2)+" TJS (92%)"
+  :"+0.00 TJS";
+}
+
+function saveHistory(){
+ localStorage.setItem(
+  HISTORY_KEY,JSON.stringify(history.slice(0,100))
  );
 }
-function updatePrice(){
- price+=move();
- const c=candles[candles.length-1];
- c.close=price;
- c.high=Math.max(c.high,price);
- c.low=Math.min(c.low,price);
- tick++;
- if(tick%60===0){
-  candles.push({open:price,close:price,high:price,low:price});
-  if(candles.length>100)candles.shift();
- }
- draw();
-}
+
 function renderHistory(){
- const box=$("history");
- box.replaceChildren();
+ const root=$("history");
+ root.replaceChildren();
+
  if(!history.length){
-  box.textContent="Ҳоло савдо нест.";return;
+  root.textContent="Ҳоло савдо нест.";
+  return;
  }
- history.slice(0,15).forEach(h=>{
+
+ history.slice(0,15).forEach(t=>{
   const div=document.createElement("div");
-  div.className="item";
-  div.textContent=h;
-  box.appendChild(div);
+  div.className="trade";
+  div.textContent=
+   t.pair+" · "+(t.direction==="up"?"↑":"↓")+
+   " · "+money(t.amount)+" · "+
+   (t.result==="win"?"БУРД":
+    t.result==="loss"?"БОХТ":"БАРОБАР");
+  root.appendChild(div);
  });
 }
-function updateProfit(){
- const n=Number($("stake").value);
- $("profit").textContent=
-  Number.isFinite(n)?("+"+(n*.92).toFixed(2)+" TJS (92%)"):"—";
+
+function renderActive(){
+ $("activeCount").textContent=activeTrades.length;
 }
+
 function openTrade(direction){
- if(trade)return;
- const amount=Number($("stake").value);
- if(!Number.isFinite(amount)||amount<1||amount>100||
-    amount>balance()){
-  alert("Маблағи савдо нодуруст ё баланс нокифоя аст.");
+ const amount=Number($("amount").value);
+ const duration=Number($("duration").value);
+
+ if(!Number.isFinite(amount)||amount<1||amount>100){
+  $("message").textContent=
+   "Маблағ бояд аз 1 то 100 сомонӣ бошад.";
   return;
  }
- setBalance(balance()-amount);
- trade={
-  direction,amount,entry:price,
-  pair:$("pair").value,mode:$("mode").value,
-  expires:Date.now()+Number($("duration").value)*1000
- };
- $("up").disabled=$("down").disabled=true;
- $("pair").disabled=$("mode").disabled=true;
- $("status").textContent="Савдо фаъол аст...";
-}
-function finishTrade(){
- if(!trade)return;
- const delta=price-trade.entry;
- const won=delta!==0&&
-  (delta>0?"up":"down")===trade.direction;
- let text="";
- if(delta===0){
-  setBalance(balance()+trade.amount);
-  text="Мусовӣ: "+money(trade.amount)+" баргашт.";
- }else if(won){
-  const profit=trade.amount*.92;
-  setBalance(balance()+trade.amount+profit);
-  text="БУРД: +"+money(profit);
- }else{
-  text="БОХТ: -"+money(trade.amount);
+
+ if(activeTrades.length>=10){
+  $("message").textContent=
+   "Ҳадди аксар 10 савдои фаъол иҷозат аст.";
+  return;
  }
- history.unshift(trade.pair+" | "+text);
- history=history.slice(0,50);
- localStorage.setItem(HISTORY_KEY,JSON.stringify(history));
- $("status").textContent=text;
- trade=null;
- $("up").disabled=$("down").disabled=false;
- $("pair").disabled=$("mode").disabled=false;
+
+ if(getBalance()<amount){
+  $("message").textContent="Баланс кофӣ нест.";
+  return;
+ }
+
+ changeBalance(-amount);
+
+ activeTrades.push({
+  id:Date.now()+"-"+Math.random(),
+  mode,
+  pair,
+  direction,
+  amount,
+  entry:price,
+  end:Date.now()+duration*1000
+ });
+
+ refreshBalance();
+ renderActive();
+
+ $("message").textContent=
+  "Савдои виртуалӣ кушода шуд: "+
+  (direction==="up"?"БОЛО":"ПОЁН")+
+  " · "+money(amount);
+}
+
+function settleTrades(){
+ const now=Date.now();
+ const remaining=[];
+
+ for(const t of activeTrades){
+  if(now<t.end){
+   remaining.push(t);
+   continue;
+  }
+
+  // Ҳангоми анҷом ҳамон ҷуфти интихобшуда истифода мешавад.
+  // Агар ҷуфт иваз шуда бошад, савдо то бозгашт
+  // ба ҷуфти худ нигоҳ дошта мешавад.
+  if(t.pair!==pair){
+   remaining.push(t);
+   continue;
+  }
+
+  const diff=price-t.entry;
+  const win=t.direction==="up"?diff>0:diff<0;
+  const tie=Math.abs(diff)<1e-10;
+
+  const result=tie?"tie":win?"win":"loss";
+  const payout=tie?t.amount:win?t.amount*1.92:0;
+
+  const oldMode=mode;
+  mode=t.mode;
+  if(payout>0)changeBalance(payout);
+  mode=oldMode;
+
+  history.unshift({
+   ...t,
+   exit:price,
+   result,
+   payout,
+   closedAt:now
+  });
+ }
+
+ activeTrades=remaining;
+ saveHistory();
  renderHistory();
+ renderActive();
+ refreshBalance();
 }
-function updateTimer(){
- if(!trade){
-  const d=Number($("duration").value);
-  $("timer").textContent=
-   String(Math.floor(d/60)).padStart(2,"0")+":00";
-  return;
- }
- const left=Math.max(0,
-  Math.ceil((trade.expires-Date.now())/1000));
- $("timer").textContent=
-  String(Math.floor(left/60)).padStart(2,"0")+":"+
-  String(left%60).padStart(2,"0");
- if(left===0)finishTrade();
-}
-$("up").onclick=()=>openTrade("up");
-$("down").onclick=()=>openTrade("down");
-$("stake").oninput=updateProfit;
-$("mode").onchange=renderBalance;
-$("pair").onchange=()=>{
- price=PAIRS[$("pair").value];
- initialise();
-};
-window.addEventListener("resize",draw);
-window.addEventListener("storage",e=>{
- if(e.key===WALLET_KEY||e.key===DEMO_KEY)renderBalance();
+
+document.querySelectorAll("[data-tf]").forEach(btn=>{
+ btn.onclick=()=>{
+  timeframe=Number(btn.dataset.tf);
+  document.querySelectorAll("[data-tf]").forEach(b=>{
+   b.classList.toggle("active",b===btn);
+  });
+  rebuild();
+  updateCountdown();
+ };
 });
-initialise();
-renderBalance();renderHistory();updateProfit();
+
+$("zoomIn").onclick=()=>{
+ visible=Math.max(12,visible-10);
+ drawAll();
+};
+
+$("zoomOut").onclick=()=>{
+ visible=Math.min(150,visible+10);
+ drawAll();
+};
+
+$("reset").onclick=()=>{
+ visible=55;
+ timeframe=60;
+ document.querySelectorAll("[data-tf]").forEach(b=>{
+  b.classList.toggle("active",b.dataset.tf==="60");
+ });
+ rebuild();
+ updateCountdown();
+};
+
+$("ma").onchange=drawAll;
+
+$("pair").onchange=()=>{
+ pair=$("pair").value;
+ price=BASE[pair];
+ makeHistory();
+};
+
+$("demoMode").onclick=()=>{
+ mode="demo";
+ refreshBalance();
+};
+
+$("realMode").onclick=()=>{
+ mode="real";
+ refreshBalance();
+};
+
+$("amount").oninput=updateProfit;
+
+$("upBtn").onclick=()=>openTrade("up");
+$("downBtn").onclick=()=>openTrade("down");
+
+window.addEventListener("resize",drawAll);
+
+history=readJSON(HISTORY_KEY,[]);
+if(!Array.isArray(history))history=[];
+
+makeHistory();
+refreshBalance();
+renderHistory();
+renderActive();
+updateProfit();
+updateCountdown();
+
 setInterval(updatePrice,1000);
-setInterval(updateTimer,200);
+setInterval(updateCountdown,250);
 </script>
+
 </body>
 </html>
