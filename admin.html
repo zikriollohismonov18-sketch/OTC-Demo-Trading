@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OTC Тоҷикистон — Панели админ</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#0b1220;color:#f5f7fb;
+ font-family:Arial,sans-serif
+}
+header{
+ padding:20px;background:#172338;
+ border-bottom:1px solid #34465f
+}
+main{max-width:1100px;margin:auto;padding:15px}
+.card{
+ background:#1b293e;border:1px solid #34465f;
+ border-radius:14px;padding:18px;margin-bottom:15px
+}
+h1,h2,h3{margin-top:0}
+.muted{color:#a9b9cd;font-size:14px}
+.grid{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:12px
+}
+.value{font-size:26px;font-weight:bold;margin-top:10px}
+.green{color:#31d58a}
+.red{color:#ff7373}
+.yellow{color:#ffd36b}
+.request{
+ border:1px solid #34465f;border-radius:10px;
+ padding:15px;margin:12px 0
+}
+button{
+ background:#2563eb;color:white;border:0;
+ border-radius:8px;padding:11px 15px;
+ cursor:pointer;font-weight:bold;margin:5px 5px 5px 0
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.approve{background:#14885c}
+.reject{background:#b83f4d}
+a{color:#91bfff}
+.notice{
+ background:#493a1e;color:#ffe0a0;
+ border-radius:10px;padding:12px;margin-bottom:15px
+}
+@media(max-width:650px){
+ .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>⚙️ OTC Тоҷикистон — Админ</h1>
+<p class="muted">REAL TEST — идоракунии маблағҳои виртуалӣ</p>
+</header>
+
+<main>
+<div class="notice">
+Ин панели админи озмоишӣ мебошад.
+Он ҳифзи серверӣ ва авторизатсияи админ надорад.
+</div>
+
+<div class="grid">
+ <div class="card">
+  <h3>Баланси виртуалӣ</h3>
+  <div class="value green" id="balance">0 TJS</div>
+ </div>
+ <div class="card">
+  <h3>Дархостҳои интизор</h3>
+  <div class="value yellow" id="pending">0</div>
+ </div>
+ <div class="card">
+  <h3>Дархостҳои анҷомшуда</h3>
+  <div class="value" id="completed">0</div>
+ </div>
+</div>
+
+<div class="card">
+ <h2>Дархостҳои нав</h2>
+ <div id="pendingList"></div>
+</div>
+
+<div class="card">
+ <h2>Таърихи амалиётҳо</h2>
+ <div id="history"></div>
+</div>
+
+<div class="card">
+ <a href="wallet.html">← Бозгашт ба ҳамён</a>
+</div>
+</main>
+
+<script>
+"use strict";
+
+const KEY="otc_virtual_wallet_v1";
+
+function load(){
+ try{
+  const data=JSON.parse(localStorage.getItem(KEY));
+  if(data&&Number.isFinite(data.balance)&&
+     Array.isArray(data.requests))return data;
+ }catch(e){}
+ return {balance:200,requests:[]};
+}
+
+let state=load();
+
+function money(n){
+ return Number(n).toFixed(2)+" TJS";
+}
+
+function escapeHTML(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(state));
+ render();
+}
+
+function approve(id){
+ const r=state.requests.find(x=>x.id===id);
+ if(!r||r.status!=="pending")return;
+
+ if(!confirm("Ин дархости виртуалиро тасдиқ мекунӣ?"))
+  return;
+
+ if(r.type==="deposit"){
+  state.balance=Number(
+   (state.balance+Number(r.amount)).toFixed(2)
+  );
+ }else if(r.type!=="withdraw"){
+  return;
+ }
+
+ // Withdrawal аллакай ҳангоми дархост
+ // аз баланси дастрас кам карда шудааст.
+ r.status="approved";
+ r.reviewedAt=new Date().toISOString();
+ save();
+}
+
+function reject(id){
+ const r=state.requests.find(x=>x.id===id);
+ if(!r||r.status!=="pending")return;
+
+ if(!confirm("Ин дархост рад карда шавад?"))
+  return;
+
+ if(r.type==="withdraw"){
+  // Баргардонидани маблағи захирашуда
+  state.balance=Number(
+   (state.balance+Number(r.amount)).toFixed(2)
+  );
+ }else if(r.type!=="deposit"){
+  return;
+ }
+
+ r.status="rejected";
+ r.reviewedAt=new Date().toISOString();
+ save();
+}
+
+function requestHTML(r,actions){
+ const type=r.type==="deposit"?
+  "Пур кардани ҳисоб":"Баровардани маблағ";
+
+ const div=document.createElement("div");
+ div.className="request";
+
+ const title=document.createElement("h3");
+ title.textContent=type+" — "+money(r.amount);
+ div.appendChild(title);
+
+ const p=document.createElement("p");
+ p.textContent="Ҳолат: "+r.status;
+ div.appendChild(p);
+
+ const date=document.createElement("p");
+ date.className="muted";
+ date.textContent="Сана: "+(r.date||"—");
+ div.appendChild(date);
+
+ if(r.destination){
+  const destination=document.createElement("p");
+  destination.textContent=
+   "Қабулкунанда: "+r.destination;
+  div.appendChild(destination);
+ }
+
+ if(actions){
+  const yes=document.createElement("button");
+  yes.className="approve";
+  yes.textContent="✓ Тасдиқ";
+  yes.onclick=()=>approve(r.id);
+
+  const no=document.createElement("button");
+  no.className="reject";
+  no.textContent="✕ Рад кардан";
+  no.onclick=()=>reject(r.id);
+
+  div.append(yes,no);
+ }
+ return div;
+}
+
+function render(){
+ state=load();
+
+ document.getElementById("balance").textContent=
+  money(state.balance);
+
+ const pending=state.requests.filter(
+  r=>r.status==="pending"
+ );
+ const completed=state.requests.filter(
+  r=>r.status!=="pending"
+ );
+
+ document.getElementById("pending").textContent=
+  pending.length;
+ document.getElementById("completed").textContent=
+  completed.length;
+
+ const pendingList=document.getElementById("pendingList");
+ pendingList.replaceChildren();
+
+ if(!pending.length){
+  pendingList.textContent="Дархости нав нест.";
+ }else{
+  pending.slice().reverse().forEach(r=>
+   pendingList.appendChild(requestHTML(r,true))
+  );
+ }
+
+ const history=document.getElementById("history");
+ history.replaceChildren();
+
+ if(!completed.length){
+  history.textContent="Таърих ҳоло холӣ аст.";
+ }else{
+  completed.slice().reverse().forEach(r=>
+   history.appendChild(requestHTML(r,false))
+  );
+ }
+}
+
+window.addEventListener("storage",e=>{
+ if(e.key===KEY)render();
+});
+
+render();
+</script>
+</body>
+</html>
