@@ -1,0 +1,104 @@
+
+let timeframe=60;
+let ticks=[];
+const originalUpdatePrice=updatePrice;
+
+function changeTF(seconds){
+ timeframe=seconds;
+ rebuildCandles();
+
+ document.querySelectorAll(".timeframes button")
+ .forEach(button=>{
+  button.classList.toggle(
+   "active",
+   button.textContent.trim()===({
+    5:"5s",20:"20s",30:"30s",
+    60:"1m",180:"3m",300:"5m"
+   }[seconds])
+  );
+ });
+}
+
+function rebuildCandles(){
+ const grouped=new Map();
+
+ for(const tick of ticks){
+  const bucket=Math.floor(tick.time/(timeframe*1000));
+  if(!grouped.has(bucket)){
+   grouped.set(bucket,{
+    open:tick.price,
+    high:tick.price,
+    low:tick.price,
+    close:tick.price
+   });
+  }else{
+   const c=grouped.get(bucket);
+   c.high=Math.max(c.high,tick.price);
+   c.low=Math.min(c.low,tick.price);
+   c.close=tick.price;
+  }
+ }
+
+ if(grouped.size){
+  candles=[...grouped.values()].slice(-90);
+ }
+ draw();
+}
+
+// Нархи охиринро барои сохтани свечаҳо сабт мекунем.
+function recordTick(){
+ ticks.push({
+  time:Date.now(),
+  price
+ });
+
+ // То 5 соат маълумоти сониягиро нигоҳ медорем.
+ if(ticks.length>18000)ticks.shift();
+ rebuildCandles();
+}
+
+// Шкалаи нарх дар тарафи рост
+function drawPriceScale(){
+ const el=$("chart");
+ const ctx=el.getContext("2d");
+ const d=window.devicePixelRatio||1;
+ const w=el.width/d;
+ const h=el.height/d;
+ const data=candles.slice(-60);
+ if(!data.length)return;
+
+ const high=Math.max(...data.map(c=>c.high));
+ const low=Math.min(...data.map(c=>c.low));
+ const range=Math.max(high-low,.000001);
+ const decimals=$("pair").value.includes("JPY")?3:5;
+
+ ctx.save();
+ ctx.setTransform(d,0,0,d,0,0);
+ ctx.fillStyle="#0c1523";
+ ctx.fillRect(w-78,0,78,h);
+ ctx.fillStyle="#c4d5eb";
+ ctx.font="12px Arial";
+ ctx.textAlign="right";
+
+ for(let i=0;i<=6;i++){
+  const value=high-range*i/6;
+  const y=12+(h-25)*i/6;
+  ctx.fillText(value.toFixed(decimals),w-6,y+4);
+ }
+ ctx.restore();
+}
+
+const previousDraw=draw;
+draw=function(){
+ previousDraw();
+ drawPriceScale();
+};
+
+// updatePrice аллакай ҳар сония иҷро мешавад.
+// Ба ҷояш сабти маълумотро низ илова мекунем.
+updatePrice=function(){
+ originalUpdatePrice();
+ recordTick();
+};
+
+changeTF(60);
