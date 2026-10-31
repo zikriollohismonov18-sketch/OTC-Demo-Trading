@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OTC Тоҷикистон — Ҳамён</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:#f5f7fb;font-family:Arial,sans-serif}
+header{background:#172338;padding:20px;text-align:center}
+main{max-width:850px;margin:20px auto;padding:12px}
+.card{background:#1b293e;border:1px solid #34465f;border-radius:14px;padding:20px;margin-bottom:15px}
+h1,h2,h3{margin-top:0}
+.muted{color:#a9b9cd;font-size:14px}
+.balance{font-size:36px;font-weight:bold;color:#32d58a;margin:15px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+input,select,button{width:100%;padding:13px;border-radius:9px;font-size:15px;margin:7px 0}
+input,select{background:#0f1929;color:white;border:1px solid #53657e}
+button{border:0;background:#2673eb;color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.green{background:#13885a}
+.red{background:#b83f4d}
+.notice{background:#493a1e;color:#ffe0a0;padding:13px;border-radius:10px}
+.item{border-bottom:1px solid #34465f;padding:12px 0;font-size:14px}
+.status{color:#ffd36b}
+a{color:#91bfff}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>OTC Тоҷикистон</h1>
+<p>Ҳамёни виртуалии REAL TEST</p>
+</header>
+
+<main>
+<div class="notice">
+⚠️ Ин версия танҳо барои санҷиш аст.
+Ҳамаи маблағҳо виртуалӣ мебошанд.
+</div>
+
+<div class="card">
+<h2>Ҳисоби ман</h2>
+<p class="muted">Режим: REAL TEST</p>
+<div class="balance" id="balance">200.00 TJS</div>
+<p class="muted">Баланс танҳо баъди тасдиқи дархост зиёд мешавад.</p>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>Пур кардани ҳисоб</h3>
+<p class="muted">Аз 10 то 200 сомонӣ</p>
+<label>Маблағ</label>
+<input id="depositAmount" type="number" min="10" max="200" value="50">
+<button class="green" onclick="deposit()">Дархости пуркунӣ</button>
+</div>
+
+<div class="card">
+<h3>Баровардани маблағ</h3>
+<p class="muted">Баррасии дархост: то 24 соат</p>
+<label>Маблағ</label>
+<input id="withdrawAmount" type="number" min="1" value="50">
+<label>Маълумоти қабулкунанда (озмоишӣ)</label>
+<input id="destination" placeholder="Масалан, TEST-ACCOUNT-01">
+<button class="red" onclick="withdraw()">Дархости баровардан</button>
+</div>
+</div>
+
+<div class="card">
+<h3>Таърихи дархостҳо</h3>
+<div id="history"></div>
+</div>
+
+<div class="card">
+<h3>Саҳифаҳои система</h3>
+<p><a href="otc-test.html">Гузаштан ба савдои OTC TEST</a></p>
+<p><a href="admin.html">Панели админи озмоишӣ</a></p>
+</div>
+</main>
+
+<script>
+"use strict";
+
+const STORAGE_KEY="otc_virtual_wallet_v1";
+const DEFAULT_STATE={
+ balance:200,
+ requests:[]
+};
+
+function loadState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(saved&&Number.isFinite(saved.balance)&&
+     Array.isArray(saved.requests))return saved;
+ }catch(e){}
+ return structuredClone(DEFAULT_STATE);
+}
+
+let state=loadState();
+
+function save(){
+ localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+ render();
+}
+
+function money(n){
+ return Number(n).toFixed(2)+" TJS";
+}
+
+function escapeHtml(s){
+ return String(s).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function render(){
+ document.getElementById("balance").textContent=money(state.balance);
+
+ const history=document.getElementById("history");
+ if(!state.requests.length){
+  history.textContent="Ҳоло дархост нест.";
+  return;
+ }
+
+ history.innerHTML=state.requests.slice().reverse().map(r=>`
+  <div class="item">
+   <strong>${r.type==="deposit"?"Пуркунӣ":"Баровардан"}</strong>
+   — ${money(r.amount)}
+   <br>
+   <span class="status">${escapeHtml(r.status)}</span>
+   <br>
+   <span class="muted">${escapeHtml(r.date)}</span>
+  </div>
+ `).join("");
+}
+
+function createRequest(type,amount,destination=""){
+ state.requests.push({
+  id:crypto.randomUUID(),
+  type,
+  amount,
+  destination,
+  status:"pending",
+  date:new Date().toLocaleString("tg-TJ")
+ });
+ save();
+ alert("Дархости виртуалӣ сабт шуд.");
+}
+
+function deposit(){
+ const amount=Number(document.getElementById("depositAmount").value);
+ if(!Number.isFinite(amount)||amount<10||amount>200){
+  alert("Маблағ бояд аз 10 то 200 сомонӣ бошад.");
+  return;
+ }
+ createRequest("deposit",amount);
+}
+
+function withdraw(){
+ const amount=Number(document.getElementById("withdrawAmount").value);
+ const destination=document.getElementById("destination").value.trim();
+
+ if(!Number.isFinite(amount)||amount<=0||
+    amount>state.balance){
+  alert("Маблағи нодуруст ё баланс нокифоя аст.");
+  return;
+ }
+ if(!destination){
+  alert("Маълумоти қабулкунандаро ворид кун.");
+  return;
+ }
+
+ // Маблағ ҳангоми дархост захира мешавад.
+ state.balance=Number((state.balance-amount).toFixed(2));
+ createRequest("withdraw",amount,destination);
+}
+
+window.addEventListener("storage",e=>{
+ if(e.key===STORAGE_KEY){
+  state=loadState();
+  render();
+ }
+});
+
+render();
+</script>
+</body>
+</html>
+# OTC-Demo-Trading
